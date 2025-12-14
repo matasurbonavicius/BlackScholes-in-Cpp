@@ -2,7 +2,9 @@
 
 A C++ implementation of the Black-Scholes model for pricing European options and visualizing various option strategies.
 
-## Don't forget to check out the pdf
+## Paper
+
+- [My paper on this project](analyzing-option-and-underlying-positions.pdf)
 
 ## What it does
 
