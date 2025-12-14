@@ -2,6 +2,8 @@
 
 A C++ implementation of the Black-Scholes model for pricing European options and visualizing various option strategies.
 
+## Don't forget to check out the pdf
+
 ## What it does
 
 - Prices call and put options using the Black-Scholes formula
