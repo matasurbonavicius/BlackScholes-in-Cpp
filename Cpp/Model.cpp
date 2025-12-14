@@ -18,7 +18,7 @@ using namespace std;
 
 
 
-// IMPORTANT * IMPORTANT * IMPORTANT * IMPORTANT * IMPORTANT * IMPORTANT * IMPORTANT *
+// IMPORTANT !!!!
 // ----------------------------------------------------------------------------------|
 // --- SCRIPT REQUIRES GNUPLOT TO BE INSTALLED                                       | 
 // --- GNUPLOT PATH SHOULD BE DEFINED BELOW                                          | 
@@ -64,6 +64,7 @@ private:
 
     // N(x) denotes the standard normal cumulative distribution function
     // ^ definition straight outta wikipedia
+    // from: https://stackoverflow.com/questions/2328258/cumulative-normal-distribution-function-in-c-c
     double N(double x) const {
         return 0.5 * erfc(-x * sqrt(0.5));
     }
@@ -81,82 +82,43 @@ public:
         computeD1D2();
     }
 
-    /**
-     * Compute the call option price.
-     * @return Theoretical price of the call option.
-     */
+    // All formulas in README.md
     double callPrice() const {
         return S * N(d1) - K * exp(-r * T) * N(d2);
     }
 
-    /**
-     * Compute the put option price.
-     * @return Theoretical price of the put option.
-     */
     double putPrice() const {
         return K * exp(-r * T) * N(-d2) - S * N(-d1);
     }
 
-    /**
-     * Compute the call option's Delta.
-     * @return Delta of the call option.
-     */
     double callDelta() const {
         return N(d1);
     }
 
-    /**
-     * Compute the put option's Delta.
-     * @return Delta of the put option.
-     */
     double putDelta() const {
         return (N(d1) - 1);
     }
 
-    /**
-     * Compute the option's Gamma (same for both call and put).
-     * @return Gamma of the option.
-     */
     double gamma() const {
         return (n(d1) / (S * sigma * sqrt(T)));
     }
 
-    /**
-     * Compute the call option's Theta.
-     * @return Theta of the call option.
-     */
     double callTheta() const {
         return ((-S * sigma * n(d1) / (2 * sqrt(T))) - (r * K * exp(-r * T) * N(d2)));
     }
 
-    /**
-     * Compute the put option's Theta.
-     * @return Theta of the put option.
-     */
     double putTheta() const {
         return ((-S * sigma * n(d1) / (2 * sqrt(T))) + (r * K * exp(-r * T) * N(-d2)));
     }
 
-    /**
-     * Compute the option's Vega (same for both call and put).
-     * @return Vega of the option.
-     */
     double optionVega() const {
         return (S * sqrt(T) * n(d1));
     }
 
-    /**
-     * Compute the call option's Rho.
-     * @return Rho of the call option.
-     */
     double callRho() const {
         return (K * T * exp(-r * T) * N(d2));
     }
 
-    /**
-     * Compute the put option's Rho.
-     * @return Rho of the put option.
-     */
     double putRho() const {
         return (-K * T * exp(-r * T) * N(-d2));
     }
@@ -166,7 +128,6 @@ public:
 /**
 * main function of the code overseeing all
 *
-* @structure:
 *   - Gets inputs
 *
 *   ( Goal: Price each option, display greeks )
@@ -197,7 +158,7 @@ int main() {
     cout << "|                                                                    |" << endl;
     cout << "|                    { Made by Matas Urbonavicius }                  |" << endl;
     cout << "| ================================================================== |" << endl;
-    cout << "| Option Pricing & Position Evaluation Model. Compatible for Equity. |" << endl;
+    cout << "| Option Pricing & Position Evaluation Model.                        |" << endl;
     cout << "| ================================================================== |" << endl;
     cout << "|                                                                    |" << endl;
     cout << "|--------------------------------------------------------------------|" << endl;
@@ -332,7 +293,7 @@ int main() {
     double theoretical_rho = 0;
     double implied_totalPayoff = 0;
 
-    // For some reason GnuPlot shows really crappy Y range, so i will set it myself
+    // For some reason GnuPlot shows really crappy Y range, so we will set it ourselves
     double minYValue = 1e30;
     double maxYValue = -1e30;
 
@@ -491,6 +452,7 @@ int main() {
 
     // ---
     // 4th loop. Goal: Visualize position payoff at different time stamps
+    // This one's an animal
     // ---
 
     ofstream Payoff_vs_Time_Graph_File("Payoff_vs_Time_Graph_Data.txt");
