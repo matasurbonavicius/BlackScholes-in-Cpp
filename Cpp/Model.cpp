@@ -22,18 +22,16 @@ using namespace std;
 // ----------------------------------------------------------------------------------|
 // --- SCRIPT REQUIRES GNUPLOT TO BE INSTALLED                                       | 
 // --- GNUPLOT PATH SHOULD BE DEFINED BELOW                                          | 
-string gnu_path = "C:\\Program Files\\gnuplot\\bin"; //                              |
+string gnu_path = "C:\\Program Files\\gnuplot\\bin\\gnuplot.exe"; //                 |
 // ----------------------------------------------------------------------------------|
-// IMPORTANT * IMPORTANT * IMPORTANT * IMPORTANT * IMPORTANT * IMPORTANT * IMPORTANT * 
 
-
-
-// Define M_PI if not already defined. Represents the value of Pi.
+// Define M_PI. It's Pi.
 #ifndef M_PI
 #define M_PI 3.14159
 #endif
 
 // Function to calculate the intristic value for a call option.
+// Obviously stock price - strike price. opposite for put.
 double callInstristicValue(double stockPrice, double strikePrice) {
     return max<double>(0.0, stockPrice - strikePrice);
 }
@@ -44,16 +42,11 @@ double putInstristicValue(double stockPrice, double strikePrice) {
 }
 
 /**
- * @class BlackScholes
- *
- * @brief Class to compute Black-Scholes option pricing and Greeks.
- *
  * This class provides functions to compute the prices of European call
  * and put options, as well as the Greeks (Delta, Gamma, Vega, Theta, and Rho).
  */
 class BlackScholes {
 private:
-    // Private member variables
     double S;       // Current stock price
     double K;       // Strike price
     double r;       // Risk-free interest rate
@@ -63,31 +56,20 @@ private:
     // Intermediate calculations for option pricing of Black Scholes formula
     double d1, d2;
 
-    /**
-     * @brief Compute the d1 and d2 values used in Black-Scholes formula.
-     */
+    // Compute the d1 and d2 values used in Black-Scholes formula.
     void computeD1D2() {
         d1 = (log(S / K) + (r + 0.5 * sigma * sigma) * T) / (sigma * sqrt(T));
         d2 = d1 - sigma * sqrt(T);
     }
 
-    /**
-     * @brief Cumulative distribution function of the standard normal distribution.
-     * @param x Value to compute the CDF for.
-     * @return Cumulative distribution from negative infinity to x.
-     * 
-     * N(x) gives the probability that a random variable following a 
-     * standard normal distribution is less than or equal to x
-     */
+    // N(x) denotes the standard normal cumulative distribution function
+    // ^ definition straight outta wikipedia
     double N(double x) const {
         return 0.5 * erfc(-x * sqrt(0.5));
     }
 
-    /**
-     * @brief Probability density function of the standard normal distribution.
-     * @param x Value to compute the PDF for.
-     * @return Value of the PDF at x.
-     */
+    // n(x) denotes the standard normal probability density function
+    // ^ definition straight outta wikipedia
     double n(double x) const {
         return (1.0 / sqrt(2.0 * M_PI)) * exp(-0.5 * x * x);
     }
@@ -100,7 +82,7 @@ public:
     }
 
     /**
-     * @brief Compute the call option price.
+     * Compute the call option price.
      * @return Theoretical price of the call option.
      */
     double callPrice() const {
@@ -108,7 +90,7 @@ public:
     }
 
     /**
-     * @brief Compute the put option price.
+     * Compute the put option price.
      * @return Theoretical price of the put option.
      */
     double putPrice() const {
@@ -116,7 +98,7 @@ public:
     }
 
     /**
-     * @brief Compute the call option's Delta.
+     * Compute the call option's Delta.
      * @return Delta of the call option.
      */
     double callDelta() const {
@@ -124,7 +106,7 @@ public:
     }
 
     /**
-     * @brief Compute the put option's Delta.
+     * Compute the put option's Delta.
      * @return Delta of the put option.
      */
     double putDelta() const {
@@ -132,7 +114,7 @@ public:
     }
 
     /**
-     * @brief Compute the option's Gamma (same for both call and put).
+     * Compute the option's Gamma (same for both call and put).
      * @return Gamma of the option.
      */
     double gamma() const {
@@ -140,7 +122,7 @@ public:
     }
 
     /**
-     * @brief Compute the call option's Theta.
+     * Compute the call option's Theta.
      * @return Theta of the call option.
      */
     double callTheta() const {
@@ -148,7 +130,7 @@ public:
     }
 
     /**
-     * @brief Compute the put option's Theta.
+     * Compute the put option's Theta.
      * @return Theta of the put option.
      */
     double putTheta() const {
@@ -156,7 +138,7 @@ public:
     }
 
     /**
-     * @brief Compute the option's Vega (same for both call and put).
+     * Compute the option's Vega (same for both call and put).
      * @return Vega of the option.
      */
     double optionVega() const {
@@ -164,7 +146,7 @@ public:
     }
 
     /**
-     * @brief Compute the call option's Rho.
+     * Compute the call option's Rho.
      * @return Rho of the call option.
      */
     double callRho() const {
@@ -172,7 +154,7 @@ public:
     }
 
     /**
-     * @brief Compute the put option's Rho.
+     * Compute the put option's Rho.
      * @return Rho of the put option.
      */
     double putRho() const {
@@ -182,7 +164,7 @@ public:
 
 
 /**
-* @brief main function of the code overseeing all
+* main function of the code overseeing all
 *
 * @structure:
 *   - Gets inputs
@@ -442,7 +424,7 @@ int main() {
     string implied_price_at_expiry = ", '" + Main_Payoff_Graph_Data_Path + "' using 1:3 with lines title 'Implied'";
 
     string plot_command_firstloop = chart_settings + "plot " + theoretical_price_at_expiry + implied_price_at_expiry;
-    string cmd_command_firstloop = "cd \"" + gnu_path + "\" && gnuplot -persist -e \"" + plot_command_firstloop + "\"";
+    string cmd_command_firstloop = "cmd /c \"\"" + gnu_path + "\" -persist -e \"" + plot_command_firstloop + "\"\"";
     system(cmd_command_firstloop.c_str());
 
     // ---
@@ -504,7 +486,7 @@ int main() {
     string Payoff_Theory = ", '" + Payoff_vs_Volatility_Graph_Path + "' using 1:3 with lines title 'Theory'";
 
     string plot_command_secondloop = Payoff_vs_Volatility_Graph_Settings + "plot " + Payoff_Market + Payoff_Theory;
-    string cmd_command_secondloop = "cd \"" + gnu_path + "\" && gnuplot -persist -e \"" + plot_command_secondloop + "\"";
+    string cmd_command_secondloop = "cmd /c \"\"" + gnu_path + "\" -persist -e \"" + plot_command_secondloop + "\"\"";
     system(cmd_command_secondloop.c_str());
 
     // ---
@@ -566,7 +548,7 @@ int main() {
     string theoretical4 = "'" + Payoff_vs_Time_Graph_Data_Path + "' using 1:4 with lines title 'In the Middle'";
 
     string plot_command_dates = chart_settings2 + "plot " + theoretical2 + ", " + theoretical3 + ", " + theoretical4;
-    string cmd_command_12 = "cd \"" + gnu_path + "\" && gnuplot -persist -e \"" + plot_command_dates + "\"";
+    string cmd_command_12 = "cmd /c \"\"" + gnu_path + "\" -persist -e \"" + plot_command_dates + "\"\"";
     system(cmd_command_12.c_str());
 
     // ---
@@ -662,7 +644,7 @@ int main() {
         string PnL = "'" + PnL_At_Expirations_path + "' using 1:2 with lines title 'At Nearest Expiry'";
 
         string plot_command_dates1 = chart_settings2 + "plot " + PnL;
-        string cmd_command_122 = "cd \"" + gnu_path + "\" && gnuplot -persist -e \"" + plot_command_dates1 + "\"";
+        string cmd_command_122 = "cmd /c \"\"" + gnu_path + "\" -persist -e \"" + plot_command_dates1 + "\"\"";
         system(cmd_command_122.c_str());
     }
 
@@ -719,7 +701,7 @@ int main() {
     string plot3D_theory = "'" + Volatility_vs_Price_vs_Payoff_Graph_Path + "' using 1:2:3:3 with lines lc palette title 'Theoretical Payoff'";
 
     string plot_command_thirdloop = Volatility_vs_Price_vs_Payoff_Graph_Settings + "splot " + plot3D_theory;
-    string cmd_command_thirdloop = "cd \"" + gnu_path + "\" && gnuplot -persist -e \"" + plot_command_thirdloop + "\"";
+    string cmd_command_thirdloop = "cmd /c \"\"" + gnu_path + "\" -persist -e \"" + plot_command_thirdloop + "\"\"";
     system(cmd_command_thirdloop.c_str());
 
 }
